@@ -1,9 +1,9 @@
-import { typeIcons, typeIconsColor } from "./images";
-import { useMemo } from "react";
-import { TFunction } from "i18next";
-import { Option } from "@smartb/g2";
-import { Box, Stack, StackProps, SvgIcon, SvgIconProps, Typography, TypographyProps } from "@mui/material";
-import { useTranslation } from "react-i18next";
+import {typeIcons, typeIconsColor} from "./images";
+import {useMemo} from "react";
+import {TFunction} from "i18next";
+import {Option} from "@smartb/g2";
+import {Box, Stack, StackProps, SvgIcon, SvgIconProps, Typography, TypographyProps} from "@mui/material";
+import {useTranslation} from "react-i18next";
 
 export interface ProjectTypeIconProps extends SvgIconProps {
   projectType: number
@@ -55,4 +55,8 @@ export const getProjectTypesOptions = (t: TFunction) => typeIcons.map((_, index)
   key: index + 1,
   label: t(`projects.types.${index + 1}`),
   icon: <ProjectTypeIcon projectType={index + 1} fontSize="small" />
+}))
+export const getProjectTypesOptionsWithoutIcons = (t: TFunction) => typeIcons.map((_, index): Option => ({
+  key: index + 1,
+  label: t(`projects.types.${index + 1}`)
 }))
