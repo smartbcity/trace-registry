@@ -3,7 +3,6 @@ import {MultiPagePdfDisplayer} from "components";
 import pdf from "./pdd.pdf"
 import { useElementSize } from "@mantine/hooks";
 
-
 export interface DocumentsViewerProps {
 }
 
