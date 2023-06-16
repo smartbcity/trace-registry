@@ -1,6 +1,6 @@
 import {Box} from "@mui/material";
 import {MultiPagePdfDisplayer} from "components";
-import pdf from "./pdd.pdf"
+import pdf from "./rapport.pdf"
 import { useElementSize } from "@mantine/hooks";
 
 export interface DocumentsViewerProps {
