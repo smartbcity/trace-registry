@@ -17,29 +17,29 @@ export const DocumentsViewer = (props: DocumentsViewerProps) => {
     
 
     return (
-        <Box
-        ref={ref}
-            bgcolor="#F0EDE6"
-            flexGrow={1}
-            flexBasis={0}
-            sx={{
-                padding: (theme) => theme.spacing(1.5),
-                width: "100%",
-                height: "100%",
-                overflow: "auto",
-                "& .pdfPage": {
-                    marginBottom: "16px"
-                },
-                "& .mui-utz8u3" : {
-                    margin: "0"
-                }
-            }}
-        >
-            <MultiPagePdfDisplayer
-                files={[pdf]}
-                parentWidth={width}
-                {...props}
-                />
-        </Box>
+            <Box
+            ref={ref}
+                bgcolor="#F0EDE6"
+                flexGrow={1}
+                flexBasis={0}
+                sx={{
+                    padding: (theme) => theme.spacing(1.5),
+                    width: "100%",
+                    height: "100%",
+                    overflow: "auto",
+                    "& .pdfPage": {
+                        marginBottom: (theme) => theme.spacing(2)
+                    },
+                    "& .mui-utz8u3" : {
+                        margin: "0"
+                    }
+                }}
+            >
+                <MultiPagePdfDisplayer
+                    {...props}
+                    files={[{name: "lala.pdf", file: pdf}]}
+                    parentWidth={width}
+                    />
+            </Box>
     )
 }
