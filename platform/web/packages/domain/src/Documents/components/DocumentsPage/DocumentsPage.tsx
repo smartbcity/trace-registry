@@ -1,9 +1,8 @@
-import {DocumentsChatbot, DocumentsViewer, DocumentsThumbnail} from "domain-components";
-import {Stack} from "@mui/material";
-import { useState, useMemo, useCallback } from "react";
-import { FilePath, useProjectFilesQuery } from "../../api/query";
-import { useParams } from "react-router-dom";
-import pdf from "../DocumentsViewer/pdd.pdf";
+import {DocumentsChatbot, DocumentsFilesLayout} from "domain-components"
+import {Stack} from "@mui/material"
+import { useState, useMemo, useCallback } from "react"
+import { FilePath, useProjectFilesQuery } from "../../api/query"
+import { useParams } from "react-router-dom"
 
 export interface DocumentsPageProps {
 }
@@ -36,10 +35,8 @@ export const DocumentsPage = (/* props: DocumentsPageProps */) => {
         <Stack
             direction="row"
             position="relative"
-            height="calc(100vh - 200px)"
         >
-            <DocumentsThumbnail files={[{name: "lala.pdf", file: pdf},{name: "lola.pdf", file: pdf}]} isLoading={!downloadedFiles} />
-            <DocumentsViewer reference={reference} setQuote={onSetQuote} isLoading={!downloadedFiles} files={downloadedFiles}  />
+            <DocumentsFilesLayout reference={reference} setQuote={onSetQuote} isLoading={!downloadedFiles} files={downloadedFiles} />
             <DocumentsChatbot setReference={setReference} quote={quote} files={files} setFiles={setFiles} />
         </Stack>
     )

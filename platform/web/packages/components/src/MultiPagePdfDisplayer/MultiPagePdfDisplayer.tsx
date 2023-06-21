@@ -6,7 +6,6 @@ import 'react-pdf/dist/esm/Page/TextLayer.css'
 import type { PDFPageProxy } from 'pdfjs-dist';
 import type { TextItem } from 'pdfjs-dist/types/src/display/api';
 import { Stack } from '@mui/material'
-import { useMultiFilePagination } from './useMultiFilePagination'
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.js',
@@ -19,20 +18,17 @@ interface MultiPagePdfDisplayerProps {
     reference?: string
     setQuote: (quote: string, fileName: string, pageNumber: number) => void
     isLoading?: boolean
+    numPages: number
+    onDocumentLoadSuccess: (pdf: any) => void
+    setPageRef:  (index: number, ref: (HTMLCanvasElement | null)) => (HTMLCanvasElement | null)
+
 }
 
 export const MultiPagePdfDisplayer = (props: MultiPagePdfDisplayerProps) => {
-    const { files, parentWidth, reference, isLoading = false, setQuote } = props
+    const { files, parentWidth, reference, isLoading = false, setQuote, numPages, onDocumentLoadSuccess, setPageRef } = props
 
     const [currentLoadingPage, setCurrentLoadingPage] = useState(1)
     const paragraphs = useRef<{ text: string, elementsIds: string[] }[]>([])
-
-    const {
-        numPages,
-        setPageRef,
-        onDocumentLoadSuccess,
-        pagination
-    } = useMultiFilePagination()
 
     useEffect(() => {
         const loadNextPages = () => {
@@ -116,7 +112,6 @@ export const MultiPagePdfDisplayer = (props: MultiPagePdfDisplayerProps) => {
                 overflow: "hidden"
             }}
         >
-            {files && pagination}
             {files ? (
                 <Stack display="flex" flexDirection="column">
                     {files.map(((document, indexDoc) => (

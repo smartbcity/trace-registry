@@ -1,7 +1,6 @@
-import {Box} from "@mui/material";
-import {MultiPagePdfDisplayer} from "components";
-import pdf from "./pdd.pdf"
-import { useElementSize } from "@mantine/hooks";
+import {Box} from "@mui/material"
+import {MultiPagePdfDisplayer} from "components"
+import { useElementSize } from "@mantine/hooks"
 
 
 export interface DocumentsViewerProps {
@@ -9,11 +8,15 @@ export interface DocumentsViewerProps {
     reference?: string
     setQuote: (quote: string, fileName: string, pageNumber: number) => void
     isLoading?: boolean
+    numPages: number
+    onDocumentLoadSuccess: (pdf: any) => void
+    setPageRef:  (index: number, ref: (HTMLCanvasElement | null)) => (HTMLCanvasElement | null)
 }
 
 export const DocumentsViewer = (props: DocumentsViewerProps) => {
+    const {files, numPages, onDocumentLoadSuccess, setPageRef} = props
 
-    const { ref, width } = useElementSize();
+    const { ref, width } = useElementSize()
     
 
     return (
@@ -37,8 +40,11 @@ export const DocumentsViewer = (props: DocumentsViewerProps) => {
             >
                 <MultiPagePdfDisplayer
                     {...props}
-                    files={[{name: "lala.pdf", file: pdf}]}
+                    files={files}
                     parentWidth={width}
+                    numPages={numPages}
+                    setPageRef={setPageRef}
+                    onDocumentLoadSuccess={onDocumentLoadSuccess}
                     />
             </Box>
     )

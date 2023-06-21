@@ -1,9 +1,8 @@
 import { useCallback, useRef, useState } from 'react'
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
 import 'react-pdf/dist/esm/Page/TextLayer.css'
-import type { PDFDocumentProxy } from 'pdfjs-dist';
+import type { PDFDocumentProxy } from 'pdfjs-dist'
 import { Pagination } from '@smartb/g2'
-import { Box } from '@mui/material'
 
 export const useMultiFilePagination = () => {
     const [numPages, setNumPages] = useState(0)
@@ -36,21 +35,13 @@ export const useMultiFilePagination = () => {
     )
     
     return {
-        pagination: <Box
-            position={'absolute'}
-            display={'flex'}
-            zIndex={5}
-            margin={(theme) => theme.spacing(3)}
-            bgcolor="rgba(240, 237, 230, 0.9)"
-            padding={(theme) => theme.spacing(1)}
-            borderRadius="10px"
-        >
+        pagination:
             <Pagination
                 page={currentPage}
-                totalPage={numTotalPages}
+                totalPage={numPages}
                 onPageChange={(newPageNumber) => goToPage(newPageNumber)}
             />
-        </Box>,
+        ,
         numPages,
         setNumPages,
         currentPage,
