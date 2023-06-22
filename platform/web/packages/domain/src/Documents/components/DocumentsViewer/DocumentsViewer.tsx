@@ -1,6 +1,7 @@
-import {Box} from "@mui/material"
-import {MultiPagePdfDisplayer} from "components"
-import { useElementSize } from "@mantine/hooks"
+import { Box } from "@mui/material";
+import { MultiPagePdfDisplayer } from "components";
+import pdf from "./pdd.pdf"
+import { useElementSize } from "@mantine/hooks";
 
 
 export interface DocumentsViewerProps {
@@ -14,38 +15,34 @@ export interface DocumentsViewerProps {
 }
 
 export const DocumentsViewer = (props: DocumentsViewerProps) => {
-    const {files, numPages, onDocumentLoadSuccess, setPageRef} = props
 
-    const { ref, width } = useElementSize()
-    
+    const { ref, width } = useElementSize();
+
 
     return (
-            <Box
+        <Box
             ref={ref}
-                bgcolor="#F0EDE6"
-                flexGrow={1}
-                flexBasis={0}
-                sx={{
-                    padding: (theme) => theme.spacing(1.5),
-                    width: "100%",
-                    height: "100%",
-                    overflow: "auto",
-                    "& .pdfPage": {
-                        marginBottom: (theme) => theme.spacing(2)
-                    },
-                    "& .mui-utz8u3" : {
-                        margin: "0"
-                    }
-                }}
-            >
-                <MultiPagePdfDisplayer
-                    {...props}
-                    files={files}
-                    parentWidth={width}
-                    numPages={numPages}
-                    setPageRef={setPageRef}
-                    onDocumentLoadSuccess={onDocumentLoadSuccess}
-                    />
-            </Box>
+            bgcolor="#F0EDE6"
+            flexGrow={1}
+            flexBasis={0}
+            sx={{
+                padding: (theme) => theme.spacing(1.5),
+                width: "100%",
+                height: "100%",
+                overflow: "auto",
+                "& .pdfPage": {
+                    marginBottom: "16px"
+                },
+                "& .mui-utz8u3": {
+                    margin: "0"
+                }
+            }}
+        >
+            <MultiPagePdfDisplayer
+                files={[{name: "test", file: pdf}]}
+                {...props}
+                parentWidth={width}
+            />
+        </Box>
     )
 }

@@ -1,56 +1,53 @@
 import { Stack } from "@mui/material";
 import { Chat } from "components";
-import { askQuestion } from "../../api";
 import { InputForm, Option, SmartKey } from "@smartb/g2";
-import { FilePath, useProjectListFilesQuery } from "../../api/query";
-import { useParams } from "react-router-dom";
-import { useMemo, useCallback, useState } from "react";
+import { FilePath, askQuestion } from "../../api/query";
+import { useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { SendRounded } from "@mui/icons-material";
 
 export interface DocumentsChatbotProps {
-    files: FilePath[]
-    setFiles: (files: FilePath[]) => void
+    selectedFiles: FilePath[]
+    allFiles?: FilePath[]
+    setFiles: (selectedFiles: FilePath[]) => void
     quote?: { quote: string, fileName: string, pageNumber: number }
     setReference: (ref: string) => void
+    removeQuote?: () => void
+    isLoading?: boolean
 }
 
 export const DocumentsChatbot = (props: DocumentsChatbotProps) => {
-    const { files, setFiles, setReference, /* quote */ } = props
-    const { projectId } = useParams()
+    const { selectedFiles, allFiles, setFiles, /* setReference, */ quote, removeQuote, isLoading = false } = props
     const { t } = useTranslation()
-    const [localReference, setlocalReference] = useState("")
+    // const [localReference, setlocalReference] = useState("")
 
-    const fileListQuery = useProjectListFilesQuery({ query: { id: projectId! } })
-    const fileList = fileListQuery.data?.items
 
-    const options = useMemo(() => fileList?.map((file): Option => ({
+    const options = useMemo(() => allFiles?.map((file): Option => ({
         key: file.name,
         label: file.name
-    })), [fileList])
+    })), [allFiles])
 
-    const values = useMemo(() => files.map((file) => file.name), [files])
+    const filesNames = useMemo(() => selectedFiles.map((file) => file.name), [selectedFiles])
 
-    const onChangeValues = useCallback(
+    const onChangeFiles = useCallback(
         (values: SmartKey[]) => {
             setFiles(
                 values.map(
-                    (value) => fileList?.find(
+                    (value) => allFiles?.find(
                         (file) => file.name === value
                     )!
                 )
             )
 
         },
-        [setFiles, fileList],
+        [setFiles, allFiles],
     )
 
-    const sendReference = useCallback(
-        () => {
-            setReference(localReference)
-        },
-        [localReference],
-    )
+    // const sendReference = useCallback(
+    //     () => {
+    //         setReference(localReference)
+    //     },
+    //     [localReference],
+    // )
 
     return (
         <Stack
@@ -64,15 +61,15 @@ export const DocumentsChatbot = (props: DocumentsChatbotProps) => {
             gap={2}
         >
             <InputForm
-                values={values}
-                onChangeValues={onChangeValues}
+                values={filesNames}
+                onChangeValues={onChangeFiles}
                 inputType="select"
                 multiple
-                isLoading={fileListQuery.isLoading}
+                isLoading={isLoading}
                 placeholder={t("chooseFile")}
                 options={options}
             />
-            <InputForm
+            {/* <InputForm
                 value={localReference}
                 onChange={setlocalReference}
                 inputType="textField"
@@ -85,7 +82,7 @@ export const DocumentsChatbot = (props: DocumentsChatbotProps) => {
                         onClick={sendReference}
                     />
                 }
-            />
+            /> */}
             <Chat
                 sx={{
                     overflow: "auto",
@@ -93,6 +90,8 @@ export const DocumentsChatbot = (props: DocumentsChatbotProps) => {
                 }}
                 //@ts-ignore
                 getResponse={askQuestion}
+                removeQuote={removeQuote}
+                quote={quote}
             />
         </Stack>
     )
