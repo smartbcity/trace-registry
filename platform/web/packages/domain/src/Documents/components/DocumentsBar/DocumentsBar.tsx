@@ -10,25 +10,17 @@ export interface DocumentsBarProps {
 export const DocumentsBar = (props: DocumentsBarProps) => {
     const { onOpen, onClose, isOpen } = props;
 
-
     return (
             <Stack
-                height="40px"
-                direction="row"
-                position="absolute"
                 alignItems="center"
                 justifyContent="space-between"
+                position="absolute"
                 sx={{
                     padding: (theme) => theme.spacing(2),
-                    border: "1px solid #E0E0E0",
-                    top: 20,
-                    left: 20,
-                    zIndex: 4,
-                    "& .mui-utz8u3" : {
-                        margin: "0"
-                    }
+                    zIndex: 5,
+                    top: 0,
+                    left: 0
                 }}
-
             >
                 <IconButton onClick={isOpen ? onClose : onOpen}>
                     {isOpen ? <SubtitlesOffRounded /> : <SubtitlesRounded />}

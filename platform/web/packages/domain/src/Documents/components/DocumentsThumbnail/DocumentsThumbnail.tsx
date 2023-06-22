@@ -17,25 +17,28 @@ export const DocumentsThumbnail = (props: DocumentsThumbnailProps) => {
     useEffect(() => {
         files && setSelectedFile(files[0]?.name)
     }, [files])
-    
+
 
     const handleTabChange = (_event: React.SyntheticEvent, newFile: string) => {
         setSelectedFile(newFile)
     }
 
-    const file = useMemo(() => files?.find((file) => file.name === selectedFile)?.file, [selectedFile])
+    const file = useMemo(() => files?.find((file) => file.name === selectedFile)?.file, [selectedFile, files])
 
     return (
         <Stack
-        display={isOpen ? "flex" : "none"}
-        flexDirection="column"
-        position="absolute"
-        bgcolor="rgba(240, 237, 230)"
-        alignItems="center"
-        zIndex={4}
-        sx={{
-            height: "100%",
-        }}
+            display={isOpen ? "flex" : "none"}
+            flexDirection="column"
+            position="absolute"
+            bgcolor="rgba(240, 237, 230)"
+            alignItems="center"
+            zIndex={4}
+            sx={{
+                height: "100%",
+                top: 0,
+                paddingTop: (theme) => theme.spacing(7) ,
+
+            }}
         >
             {files && (
                 <Tabs value={selectedFile} onChange={handleTabChange} >
@@ -47,7 +50,7 @@ export const DocumentsThumbnail = (props: DocumentsThumbnailProps) => {
             <Box
                 sx={{
                     overflowY: "auto",
-                    padding: (theme) => theme.spacing(1.5),
+                    padding: (theme) => theme.spacing(1.5) ,
                     "& .thumbnailPdfPage .react-pdf__Thumbnail__page__canvas": {
                         marginBottom: (theme) => theme.spacing(2),
                     },
