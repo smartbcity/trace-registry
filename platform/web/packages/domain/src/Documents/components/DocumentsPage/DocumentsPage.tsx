@@ -1,4 +1,4 @@
-import {DocumentsChatbot, DocumentsFilesLayout, DocumentsViewer} from "domain-components"
+import {DocumentsChatbot, DocumentsViewer} from "domain-components"
 import {Stack} from "@mui/material"
 import { useState, useMemo, useCallback, useEffect } from "react"
 import { FilePath, useProjectFilesQuery, useProjectListFilesQuery } from "../../api/query"
@@ -48,7 +48,6 @@ export const DocumentsPage = (/* props: DocumentsPageProps */) => {
             position="relative"
             height="calc(100vh - 220px)"
         >
-            <DocumentsFilesLayout reference={reference} setQuote={onSetQuote} isLoading={!downloadedFiles} files={downloadedFiles} />
             <DocumentsViewer reference={reference} setQuote={onSetQuote} isLoading={!filteredDownloadedFiles || filteredDownloadedFiles.length === 0} files={filteredDownloadedFiles} />
             <DocumentsChatbot removeQuote={removeQuote} setReference={setReference} quote={quote} selectedFiles={files} allFiles={fileList} isLoading={fileListQuery.isLoading} setFiles={setFiles} />
         </Stack>

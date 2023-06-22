@@ -1,7 +1,10 @@
 import { Box } from "@mui/material";
 import { MultiPagePdfDisplayer } from "components";
-import pdf from "./pdd.pdf"
 import { useElementSize } from "@mantine/hooks";
+import { useCallback, useState } from "react";
+import { useMultiFilePagination } from "components/src/MultiPagePdfDisplayer/useMultiFilePagination";
+import { DocumentsBar } from "../DocumentsBar";
+import { DocumentsThumbnail } from "../DocumentsThumbnail";
 
 
 export interface DocumentsViewerProps {
@@ -9,14 +12,27 @@ export interface DocumentsViewerProps {
     reference?: string
     setQuote: (quote: string, fileName: string, pageNumber: number) => void
     isLoading?: boolean
-    numPages: number
-    onDocumentLoadSuccess: (pdf: any) => void
-    setPageRef:  (index: number, ref: (HTMLCanvasElement | null)) => (HTMLCanvasElement | null)
 }
 
 export const DocumentsViewer = (props: DocumentsViewerProps) => {
 
     const { ref, width } = useElementSize();
+
+    const [isOpenThumbnails, setOpenThumbnails] = useState<boolean>(false)
+
+    const toggleThumbnails = useCallback(
+        () => {
+            setOpenThumbnails(old => !old)
+        },
+        [],
+    )
+
+    const {
+        pagesNumberPerDocument,
+        onDocumentLoadSuccess,
+        setPageRef,
+        goToPage
+    } = useMultiFilePagination()
 
 
     return (
@@ -38,9 +54,13 @@ export const DocumentsViewer = (props: DocumentsViewerProps) => {
                 }
             }}
         >
+            <DocumentsBar onOpen={toggleThumbnails} onClose={toggleThumbnails} isOpen={isOpenThumbnails} />
+            <DocumentsThumbnail files={props.files} isOpen={isOpenThumbnails} isLoading={props.isLoading} goToPage={goToPage} />
             <MultiPagePdfDisplayer
-                files={[{name: "test", file: pdf}]}
                 {...props}
+                onDocumentLoadSuccess={onDocumentLoadSuccess}
+                pagesNumberPerDocument={pagesNumberPerDocument}
+                setPageRef={setPageRef}
                 parentWidth={width}
             />
         </Box>

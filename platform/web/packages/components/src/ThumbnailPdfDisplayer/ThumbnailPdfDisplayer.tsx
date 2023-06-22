@@ -2,7 +2,8 @@ import { CircularProgress, Stack } from "@mui/material"
 import { Document, pdfjs, Thumbnail } from "react-pdf"
 import "react-pdf/dist/esm/Page/AnnotationLayer.css"
 import "react-pdf/dist/esm/Page/TextLayer.css"
-import {useCallback} from "react"
+import { useCallback, useEffect, useState } from "react"
+import type { PDFDocumentProxy } from 'pdfjs-dist';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     "pdfjs-dist/build/pdf.worker.min.js",
@@ -10,54 +11,48 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 ).toString()
 
 interface ThumbnailPdfDisplayerProps {
-    files?: { name: string; file: any }[]
+    file?: any
     isLoading: boolean
-    numPages: number
     goToPage: (pageNumber: number) => void
-    selectedFile?: string
 }
 
 export const ThumbnailPdfDisplayer = (props: ThumbnailPdfDisplayerProps) => {
-    const { files, isLoading, numPages, goToPage, selectedFile } = props
+    const { isLoading, goToPage, file } = props
 
-    const handleThumbnailClick = useCallback((pageNumber: number) => {
-        goToPage(pageNumber)
-    },[])
+    const [pageNumber, setPageNumber] = useState(0)
 
-    const renderThumbnails = () => {
-        if (files && selectedFile) {
-            const selectedDocument = files.find(
-                (document) => document.name === selectedFile
-            )
-
-            if (selectedDocument) {
-                return (
-                    <Document file={selectedDocument.file}>
-                        {Array.from({length: numPages}, (_, index) => (
-                            <Thumbnail
-                                key={`thumbnail_${index}`}
-                                pageNumber={index + 1}
-                                loading={<CircularProgress/>}
-                                width={200}
-                                className="thumbnailPdfPage"
-                                onClick={() => handleThumbnailClick(index + 1)}
-                            />
-                        ))}
-                    </Document>
-                )
-            }
-        }
-    }
+    useEffect(() => {
+        setPageNumber(0)
+    }, [file])
+    
+    
+    const onDocumentLoadSuccess = useCallback(
+      (pdf: PDFDocumentProxy) => {
+        setPageNumber(pdf.numPages)
+      },
+      [],
+    )
+    
 
     return (
         <Stack display="flex" flexDirection="column">
-            {isLoading ? (
+            {isLoading || !file ? (
                 <CircularProgress />
-            ) : files && selectedFile ? (
-                renderThumbnails()
             ) : (
-                <CircularProgress />
-            )}
+                <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
+                    {Array.from({ length: pageNumber }, (_, index) => (
+                        <Thumbnail
+                            key={`thumbnail_${index}`}
+                            pageNumber={index + 1}
+                            loading={<CircularProgress />}
+                            width={200}
+                            className="thumbnailPdfPage"
+                            onClick={() => goToPage(index + 1)}
+                        />
+                    ))}
+                </Document>
+            )
+        }
         </Stack>
     )
 }

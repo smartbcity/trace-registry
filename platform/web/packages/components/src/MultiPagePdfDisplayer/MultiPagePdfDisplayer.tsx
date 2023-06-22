@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
 import { LoadingPdf } from './LoadingPdf'
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
@@ -6,7 +6,6 @@ import 'react-pdf/dist/esm/Page/TextLayer.css'
 import type { PDFPageProxy } from 'pdfjs-dist';
 import type { TextItem } from 'pdfjs-dist/types/src/display/api';
 import { Stack } from '@mui/material'
-import { useMultiFilePagination } from './useMultiFilePagination'
 import { CustomTextRenderer } from 'react-pdf/dist/cjs/shared/types'
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -20,41 +19,34 @@ interface MultiPagePdfDisplayerProps {
     reference?: string
     setQuote: (quote: string, fileName: string, pageNumber: number) => void
     isLoading?: boolean
-    numPages: number
-    onDocumentLoadSuccess: (pdf: any) => void
-    setPageRef:  (index: number, ref: (HTMLCanvasElement | null)) => (HTMLCanvasElement | null)
+    pagesNumberPerDocument: number[]
+    onDocumentLoadSuccess: (pdf: any, docIndex: number) => void
+    setPageRef:  (index: number, docName: string, ref: (HTMLCanvasElement | null)) => void
 
 }
 
 export const MultiPagePdfDisplayer = (props: MultiPagePdfDisplayerProps) => {
-    const { files, parentWidth, reference, isLoading = false, setQuote, numPages, onDocumentLoadSuccess, setPageRef } = props
+    const { files, parentWidth, reference, isLoading = false, setQuote, pagesNumberPerDocument, onDocumentLoadSuccess, setPageRef } = props
 
-    const [currentLoadingPage, setCurrentLoadingPage] = useState(1)
+    
     const paragraphs = useRef<{ text: string, elementsIds: string[] }[]>([])
 
-    const {
-        numPages,
-        setPageRef,
-        onDocumentLoadSuccess,
-        pagesNumberPerDocument,
-        pagination
-    } = useMultiFilePagination(files)
-
-    useEffect(() => {
-        const loadNextPages = () => {
-            setCurrentLoadingPage((prevPage) => {
-                const nextPage = prevPage + 5
-                if (nextPage > numPages) {
-                    return numPages
-                } else {
-                    return nextPage
-                }
-            })
-        }
-        if (currentLoadingPage <= numPages) {
-            loadNextPages()
-        }
-    }, [currentLoadingPage, numPages])
+    // const [currentLoadingPage, setCurrentLoadingPage] = useState(1)
+    // useEffect(() => {
+    //     const loadNextPages = () => {
+    //         setCurrentLoadingPage((prevPage) => {
+    //             const nextPage = prevPage + 5
+    //             if (nextPage > numPages) {
+    //                 return numPages
+    //             } else {
+    //                 return nextPage
+    //             }
+    //         })
+    //     }
+    //     if (currentLoadingPage <= numPages) {
+    //         loadNextPages()
+    //     }
+    // }, [currentLoadingPage, numPages])
 
 
 
@@ -140,7 +132,7 @@ export const MultiPagePdfDisplayer = (props: MultiPagePdfDisplayerProps) => {
                                     onLoadSuccess={onPageLoadSuccess}
                                     width={parentWidth}
                                     className="pdfPage"
-                                    canvasRef={(ref) => setPageRef(index, indexDoc, ref)}
+                                    canvasRef={(ref) => setPageRef(index + 1, document.name, ref)}
                                     customTextRenderer={addIdOnTextElement}
                                 />
                             ))}

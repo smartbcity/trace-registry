@@ -2,35 +2,27 @@ import { useCallback, useRef, useState, useEffect } from 'react'
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
 import 'react-pdf/dist/esm/Page/TextLayer.css'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
-import { Pagination } from '@smartb/g2'
 
 export const useMultiFilePagination = (files?: { name: string, file: any }[]) => {
-    const [numPages, setNumPages] = useState(0)
     const [pagesCount, setPagesCount] = useState<{ totalPages: number, pagesNumberPerDocument: number[] }>({
         totalPages: 0,
         pagesNumberPerDocument: [],
     })
-    const [currentPage, setCurrentPage] = useState(1)
-    const pageRefs = useRef<HTMLCanvasElement[]>([])
+    const pageRefs = useRef<Record<string, HTMLCanvasElement>>({})
 
     useEffect(() => {
         setPagesCount({
             totalPages: 0,
             pagesNumberPerDocument: []
         })
-        setCurrentPage(1)
-        pageRefs.current = []
+        pageRefs.current = {}
     }, [files])
 
 
-    const goToPage = useCallback((pageNumber: number) => {
-        setCurrentPage(pageNumber)
-        const pageIndex = pageNumber - 1
-        if (pageIndex >= 0 && pageIndex < pageRefs.current.length) {
-            const pageRef = pageRefs.current[pageIndex]
-            if (pageRef) {
-                pageRef.scrollIntoView({ behavior: 'smooth' })
-            }
+    const goToPage = useCallback((pageNumber: number, docName: string) => {
+        const pageRef = pageRefs.current[`${docName}-${pageNumber}`]
+        if (pageRef) {
+            pageRef.scrollIntoView({ behavior: 'smooth' })
         }
     }, [])
 
@@ -49,30 +41,15 @@ export const useMultiFilePagination = (files?: { name: string, file: any }[]) =>
     )
 
     const setPageRef = useCallback(
-        (index: number, docIndex: number, ref: HTMLCanvasElement | null) => {
+        (pageNumber: number, docName: string, ref: HTMLCanvasElement | null) => {
             if (ref) {
-                let startingIndex = 0
-                for (let i = 0; i < docIndex; i++) {
-                    startingIndex += pagesCount.pagesNumberPerDocument[i] ?? 0
-                }
-                pageRefs.current[(startingIndex + index)] = ref
+                pageRefs.current[`${docName}-${pageNumber}`] = ref
             }
         },
-      [pagesCount],
+        [pagesCount],
     )
 
     return {
-        pagination:
-            <Pagination
-                page={currentPage}
-                totalPage={pagesCount.totalPages}
-                onPageChange={(newPageNumber) => goToPage(newPageNumber)}
-            />
-        ,
-        numPages,
-        setNumPages,
-        currentPage,
-        setCurrentPage,
         totalPages: pagesCount.totalPages,
         pagesNumberPerDocument: pagesCount.pagesNumberPerDocument,
         pageRefs,

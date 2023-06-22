@@ -1,39 +1,44 @@
 import {Box, Stack, Tabs, Tab} from "@mui/material"
-import pdf from "./pdd.pdf"
 import { ThumbnailPdfDisplayer } from "components/src/ThumbnailPdfDisplayer"
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 export interface DocumentsThumbnailProps {
     files?: { name: string; file: any }[]
     isLoading?: boolean
-    numPages: number
-    goToPage: (pageNumber: number) => void
+    goToPage: (pageNumber: number, docName: string) => void
+    isOpen: boolean
 }
 
 export const DocumentsThumbnail = (props: DocumentsThumbnailProps) => {
-    const { files, isLoading, numPages, goToPage } = props
+    const { files, isLoading, goToPage, isOpen } = props
     const [selectedFile, setSelectedFile] = useState<string | undefined>(
-        files && files.length > 0 ? files[0].name : undefined)
+        files ? files[0]?.name : undefined)
+
+    useEffect(() => {
+        files && setSelectedFile(files[0]?.name)
+    }, [files])
+    
 
     const handleTabChange = (_event: React.SyntheticEvent, newFile: string) => {
         setSelectedFile(newFile)
     }
 
+    const file = useMemo(() => files?.find((file) => file.name === selectedFile)?.file, [selectedFile])
+
     return (
         <Stack
-        display="flex"
+        display={isOpen ? "flex" : "none"}
         flexDirection="column"
         position="absolute"
         bgcolor="rgba(240, 237, 230)"
         alignItems="center"
-
         zIndex={4}
         sx={{
             height: "100%",
         }}
         >
             {files && (
-                <Tabs value={selectedFile} onChange={handleTabChange}>
+                <Tabs value={selectedFile} onChange={handleTabChange} >
                     {files.map((document, indexDoc) => (
                         <Tab label={document.name} value={document.name} key={indexDoc} />
                     ))}
@@ -49,11 +54,9 @@ export const DocumentsThumbnail = (props: DocumentsThumbnailProps) => {
                 }}
             >
                 <ThumbnailPdfDisplayer
-                    files={[{ name: "lala.pdf", file: pdf },{name: "lola.pdf", file: pdf}]}
+                    file={file}
                     isLoading={isLoading ? isLoading : false}
-                    numPages={numPages}
-                    goToPage={goToPage}
-                    selectedFile={selectedFile}
+                    goToPage={(number) => goToPage(number, selectedFile!)}
                 />
             </Box>
         </Stack>
