@@ -14,10 +14,11 @@ interface ThumbnailPdfDisplayerProps {
     file?: any
     isLoading: boolean
     goToPage: (pageNumber: number) => void
+    isOpen?: boolean
 }
 
 export const ThumbnailPdfDisplayer = (props: ThumbnailPdfDisplayerProps) => {
-    const { isLoading, goToPage, file } = props
+    const { isLoading, goToPage, file, isOpen = false } = props
 
     const [pageNumber, setPageNumber] = useState(0)
 
@@ -35,7 +36,7 @@ export const ThumbnailPdfDisplayer = (props: ThumbnailPdfDisplayerProps) => {
     
 
     return (
-        <Stack display="flex" flexDirection="column">
+        <Stack display={isOpen ? "flex" : "none"} flexDirection="column">
             {isLoading || !file ? (
                 <CircularProgress />
             ) : (

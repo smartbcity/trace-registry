@@ -1,6 +1,6 @@
-import {Box, Stack, Tabs, Tab} from "@mui/material"
+import { Box, Stack, Tabs, Tab } from "@mui/material"
 import { ThumbnailPdfDisplayer } from "components/src/ThumbnailPdfDisplayer"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 
 export interface DocumentsThumbnailProps {
     files?: { name: string; file: any }[]
@@ -23,8 +23,6 @@ export const DocumentsThumbnail = (props: DocumentsThumbnailProps) => {
         setSelectedFile(newFile)
     }
 
-    const file = useMemo(() => files?.find((file) => file.name === selectedFile)?.file, [selectedFile, files])
-
     return (
         <Stack
             display={isOpen ? "flex" : "none"}
@@ -36,7 +34,7 @@ export const DocumentsThumbnail = (props: DocumentsThumbnailProps) => {
             sx={{
                 height: "100%",
                 top: 0,
-                paddingTop: (theme) => theme.spacing(7) ,
+                paddingTop: (theme) => theme.spacing(7),
 
             }}
         >
@@ -50,17 +48,22 @@ export const DocumentsThumbnail = (props: DocumentsThumbnailProps) => {
             <Box
                 sx={{
                     overflowY: "auto",
-                    padding: (theme) => theme.spacing(1.5) ,
+                    padding: (theme) => theme.spacing(1.5),
                     "& .thumbnailPdfPage .react-pdf__Thumbnail__page__canvas": {
                         marginBottom: (theme) => theme.spacing(2),
                     },
                 }}
             >
-                <ThumbnailPdfDisplayer
-                    file={file}
-                    isLoading={isLoading ? isLoading : false}
-                    goToPage={(number) => goToPage(number, selectedFile!)}
-                />
+                {files?.map((document) => (
+                    <ThumbnailPdfDisplayer
+                        key={document.name}
+                        file={document.file}
+                        isLoading={isLoading ? isLoading : false}
+                        isOpen={selectedFile === document.name}
+                        goToPage={(number) => goToPage(number, selectedFile!)}
+                    />
+                ))}
+
             </Box>
         </Stack>
     )

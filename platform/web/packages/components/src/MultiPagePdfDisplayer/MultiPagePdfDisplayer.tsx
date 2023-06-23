@@ -126,7 +126,8 @@ export const MultiPagePdfDisplayer = (props: MultiPagePdfDisplayerProps) => {
                             {Array.from({ length: pagesNumberPerDocument[indexDoc] }, (_, index) => (
                                 <Page
                                     onMouseUp={() => onSelectQuote(document.name, index + 1)}
-                                    key={`page_${index + 1}`}
+                                    key={`${document.name}-${index + 1}`}
+                                    
                                     pageNumber={index + 1}
                                     loading={<LoadingPdf parentWidth={parentWidth} />}
                                     onLoadSuccess={onPageLoadSuccess}

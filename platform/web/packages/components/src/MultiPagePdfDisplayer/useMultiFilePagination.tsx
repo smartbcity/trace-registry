@@ -9,6 +9,7 @@ export const useMultiFilePagination = (files?: { name: string, file: any }[]) =>
         pagesNumberPerDocument: [],
     })
     const pageRefs = useRef<Record<string, HTMLCanvasElement>>({})
+    const [visiblePages, setVisiblePages] = useState<{pageNumber: number, docName: string}[]>([])
 
     useEffect(() => {
         setPagesCount({
@@ -44,10 +45,31 @@ export const useMultiFilePagination = (files?: { name: string, file: any }[]) =>
         (pageNumber: number, docName: string, ref: HTMLCanvasElement | null) => {
             if (ref) {
                 pageRefs.current[`${docName}-${pageNumber}`] = ref
+                
+                const observer = new IntersectionObserver(function(entries) {
+                    entries.forEach(function(entry) {
+                        var visibilityRatio = entry.intersectionRatio * 100
+                      if (visibilityRatio > 50 ) {
+                        setVisiblePages(old => {
+                            if (old.find((page) => page.docName === docName && page.pageNumber === pageNumber)) return old
+                            return [...old, {docName, pageNumber}]
+                        })
+                      } else {
+                        setVisiblePages(old => {
+                            if (old.find((page) => page.docName === docName && page.pageNumber === pageNumber)) {
+                                return old.filter((page) => page.docName !== docName || page.pageNumber !== pageNumber)
+                            }
+                            return old
+                        })
+                      }
+                    });
+                  }, {threshold: 0.5})
+                  observer.observe(ref)
             }
         },
         [pagesCount],
     )
+
 
     return {
         totalPages: pagesCount.totalPages,
@@ -55,6 +77,7 @@ export const useMultiFilePagination = (files?: { name: string, file: any }[]) =>
         pageRefs,
         goToPage,
         onDocumentLoadSuccess,
-        setPageRef
+        setPageRef,
+        visiblePages
     }
 }
