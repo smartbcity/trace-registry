@@ -3,8 +3,7 @@ import { MultiPagePdfDisplayer } from "components";
 import { useElementSize } from "@mantine/hooks";
 import { useCallback, useState } from "react";
 import { useMultiFilePagination } from "components/src/MultiPagePdfDisplayer/useMultiFilePagination";
-import { DocumentsBar } from "../DocumentsBar";
-import { DocumentsThumbnail } from "../DocumentsThumbnail";
+import { DocumentsBar, DocumentsThumbnail } from "domain-components";
 
 
 export interface DocumentsViewerProps {
@@ -31,7 +30,8 @@ export const DocumentsViewer = (props: DocumentsViewerProps) => {
         pagesNumberPerDocument,
         onDocumentLoadSuccess,
         setPageRef,
-        goToPage
+        goToPage,
+        visiblePages
     } = useMultiFilePagination()
 
 
@@ -55,7 +55,7 @@ export const DocumentsViewer = (props: DocumentsViewerProps) => {
             }}
         >
             <DocumentsBar onOpen={toggleThumbnails} onClose={toggleThumbnails} isOpen={isOpenThumbnails} />
-            <DocumentsThumbnail files={props.files} isOpen={isOpenThumbnails} isLoading={props.isLoading} goToPage={goToPage} />
+            <DocumentsThumbnail files={props.files} isOpen={isOpenThumbnails} isLoading={props.isLoading} goToPage={goToPage} visiblePages={visiblePages}/>
             <MultiPagePdfDisplayer
                 {...props}
                 onDocumentLoadSuccess={onDocumentLoadSuccess}
