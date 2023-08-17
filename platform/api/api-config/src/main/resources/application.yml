@@ -18,7 +18,7 @@ im:
   auth:
     url: https://auth.dev.connect.smart-b.io
     realm: sb-dev
-    clientId: tr-smartb-ver2-app
+    clientId: tr-smartb-ver-app
     clientSecret: ***REMOVED***
 
 i2:
