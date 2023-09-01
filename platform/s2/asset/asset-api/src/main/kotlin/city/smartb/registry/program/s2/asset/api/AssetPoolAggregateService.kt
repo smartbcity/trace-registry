@@ -29,8 +29,8 @@ import city.smartb.registry.program.s2.asset.domain.command.transaction.AssetTra
 import city.smartb.registry.program.s2.asset.domain.command.transaction.TransactionEmittedEvent
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
-import java.util.UUID
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class AssetPoolAggregateService(
@@ -99,30 +99,33 @@ class AssetPoolAggregateService(
 			throw GranularityTooSmallException(transaction = command.quantity, granularity = pool.granularity)
 		}
 
+		val id = UUID.randomUUID().toString()
+		val date = System.currentTimeMillis()
+
+		val result = CertificateGenerator.fillPendingCertificate(
+			transactionId = id,
+			date = date,
+			issuedTo = command.to!!,
+			quantity = command.quantity,
+			indicator = if (command.quantity > 1) "tons" else "ton",
+		)
+
+		val path = FilePath(
+			objectType = OrganizationFsPath.OBJECT_TYPE,
+			objectId = command.to!!,
+			directory = OrganizationFsPath.DIR_CERTIFICATE,
+			name = "certificate-$id-pending.pdf"
+		)
+		val uploaded = fileClient.fileUpload(path.toUploadCommand(), result)
+
 		val transactionEvent = AssetTransactionEmitCommand(
 			poolId = command.id,
 			from = command.from,
 			to = command.to,
 			by = command.by,
 			quantity = command.quantity,
-			type = command.type
-		).let { emitTransaction(it) }
-
-		val result = CertificateGenerator.fillPendingCertificate(
-			transactionId = transactionEvent.id,
-			date = transactionEvent.date,
-			issuedTo = transactionEvent.to!!,
-			quantity = transactionEvent.quantity,
-			indicator = if (transactionEvent.quantity > 1) "tons" else "ton",
-		)
-
-		val path = FilePath(
-			objectType = OrganizationFsPath.OBJECT_TYPE,
-			objectId = transactionEvent.to!!,
-			directory = OrganizationFsPath.DIR_CERTIFICATE,
-			name = "certificate-${transactionEvent.id}-pending.pdf"
-		)
-		val uploaded = fileClient.fileUpload(path.toUploadCommand(), result)
+			type = command.type,
+		).let { emitTransaction(it, id, date, uploaded.path) }
 
 		AssetPoolEmittedTransactionEvent(
 			id = command.id,
@@ -132,16 +135,22 @@ class AssetPoolAggregateService(
 		)
 	}
 
-	private suspend fun emitTransaction(command: AssetTransactionEmitCommand) = transactionAutomate.init(command) {
+	private suspend fun emitTransaction(
+		command: AssetTransactionEmitCommand,
+		id: String,
+		date: Long,
+		file: FilePath
+	) = transactionAutomate.init(command) {
 		TransactionEmittedEvent(
-			id = UUID.randomUUID().toString(),
-			date = System.currentTimeMillis(),
+			id = id,
+			date = date,
 			poolId = command.poolId,
 			from = command.from,
 			to = command.to,
 			by = command.by,
 			quantity = command.quantity,
-			type = command.type
+			type = command.type,
+			file = file
 		)
 	}
 }
