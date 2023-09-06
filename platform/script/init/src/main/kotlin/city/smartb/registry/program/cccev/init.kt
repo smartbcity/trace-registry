@@ -11,8 +11,8 @@ import kotlinx.coroutines.runBlocking
 fun main() = runBlocking {
     val urlAuth = "https://auth.dev.connect.smart-b.io/realms/sb-dev"
     val imUrl = "https://dev.connect.smart-b.io/im"
-    val urlCCCEV = "http://localhost:8083"
-    val urlVer = "http://localhost:8070"
+    val urlCCCEV = "https://dev.trace.smart-b.io/cccev"
+    val urlVer = "https://dev.trace.smart-b.io/ver"
 
     val nameOrchestrator = "Smartb"
     val clientOrchestrator = "tr-smartb-ver-app"
