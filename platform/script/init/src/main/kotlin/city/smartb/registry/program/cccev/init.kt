@@ -15,7 +15,7 @@ fun main() = runBlocking {
     val urlVer = "https://dev.trace.smart-b.io/ver"
 
     val nameOrchestrator = "Smartb"
-    val clientOrchestrator = "tr-smartb-registry-script-app"
+    val clientOrchestrator = "tr-smartb-registry-script-app-app"
     val secretOrchestrator = "***REMOVED***"
     val accessTokenOrchestrator= ActorAuth.getActor(urlAuth, nameOrchestrator, clientOrchestrator, secretOrchestrator)
     val actorFactory = ActorBuilder(imUrl, urlAuth, accessTokenOrchestrator)
