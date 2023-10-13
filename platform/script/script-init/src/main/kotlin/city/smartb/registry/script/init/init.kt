@@ -19,5 +19,10 @@ fun main() = runBlocking {
             clientSecret = "***REMOVED***"
         )
     )
-    InitScript(properties).run()
+    InitScript(properties).run(
+        project = false,
+        asset = false,
+        cccev = false,
+        catalogue = true
+    )
 }
