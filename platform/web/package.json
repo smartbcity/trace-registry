@@ -16,7 +16,8 @@
     "vite": "^4.1.0",
     "vite-plugin-svgr": "^2.4.0",
     "vite-tsconfig-paths": "^4.0.5",
-    "@types/qs": "^6.9.8"
+    "@types/qs": "^6.9.8",
+    "@types/dagre": "^0.7.51"
   },
   "dependencies": {
     "@emotion/css": "^11.10.6",
@@ -27,7 +28,7 @@
     "@smartb/g2": "1.0.0-alpha.180",
     "react-infinite-scroll-component": "^6.1.0",
     "@mantine/hooks": "^6.0.13",
-    "d3-hierarchy": "^3.1.2",
+    "dagre": "^0.8.5",
     "i18next": "^22.4.11",
     "qs": "^6.11.2",
     "react": "^18.2.0",

@@ -1,6 +1,6 @@
 import { Node, Position, Edge } from "reactflow"
 import { Activity, ActivityId } from "../model";
-import { tree, stratify } from "d3-hierarchy"
+import dagre from 'dagre'
 
 
 type SubActivitySelection = (selected: ActivityId, parent?: ActivityId,) => void
@@ -11,6 +11,9 @@ export type ActivityData = {
     hasSource?: boolean
     hasTarget?: boolean
     isAncestor?: boolean
+    width: number
+    height: number
+    onChangeSize: (width: number, height: number) => void
 }
 
 export type ActivityDataNode = Node<ActivityData>
@@ -45,32 +48,40 @@ export const getActivitiesOfDinasty = (activities: Activity[], dinasty?: string[
     }
 }
 
-function autoLayout(nodesLeveled: { parent: string; name: string }[], nodes: Node<ActivityData>[]) {
-    const root = stratify<{ name: string; parent: string }>()
-      .id(function (d) {
-          return d.name;
-      })
-      .parentId(function (d) {
-          return d.parent;
-      })
-      (nodesLeveled)
-    const treeLayout = tree().nodeSize([150, 350])
-    //@ts-ignore
-    treeLayout(root)
-    root.descendants().map((layoutNode) => {
-        const index = nodes.findIndex((node) => node.id === layoutNode.id)
-        if (index !== -1) {
-            //@ts-ignore
-            nodes[index] = {...nodes[index], position: {x: layoutNode.y, y: layoutNode.x}}
-        }
-    })
+export const autoLayoutNodes = (edges: Edge<any>[], nodes: Node<ActivityData>[], hasAnscestor: boolean = false) => {
+    const dagreGraph = new dagre.graphlib.Graph();
+    dagreGraph.setDefaultEdgeLabel(() => ({}));
+    dagreGraph.setGraph({ rankdir: hasAnscestor ? "LR" : "TB" });
+    console.log(nodes)
+    nodes.forEach((node) => {
+        dagreGraph.setNode(node.id, { width: node.data.width + 50, height: node.data.height + 20 });
+    });
+    edges.forEach((edge) => {
+        dagreGraph.setEdge(edge.source, edge.target);
+    });
+    dagre.layout(dagreGraph);
+    nodes.forEach((node) => {
+        const nodeWithPosition = dagreGraph.node(node.id);
+
+        // We are shifting the dagre node position (anchor=center center) to the top left
+        // so it matches the React Flow node anchor point (top left).
+        node.position = {
+            x: nodeWithPosition.x - (node.data.width + 50) / 2,
+            y: nodeWithPosition.y - (node.data.height + 20) / 2,
+        };
+
+        return node;
+    });
 }
 
-export const getNodesAnEdgesOfActivities = (activities: Activity[], ancestors: Activity[] | undefined, select: SubActivitySelection): NodesAnEdgesOfActivities => {
+export const getNodesAnEdgesOfActivities = (
+    activities: Activity[],
+    ancestors: Activity[] | undefined,
+    select: SubActivitySelection,
+    onChangeSize: (edges: Edge<any>[], nodeId: string, width: number, height: number
+    ) => void): NodesAnEdgesOfActivities => {
     const edges: Edge<any>[] = toEdges(activities, ancestors)
-    const nodes: Node<ActivityData>[] = toNodes(edges, activities, ancestors ? ancestors[ancestors?.length - 1] : undefined, select)
-    const nodesLeveled = nodes.map((node) => ({ name: node.id, parent: ancestors ? ancestors[ancestors.length - 1].identifier : "invisibleParent"}))
-    if (!ancestors) nodesLeveled.push({name: "invisibleParent", parent: ""})
+    const nodes: Node<ActivityData>[] = toNodes(edges, activities, ancestors ? ancestors[ancestors?.length - 1] : undefined, select, onChangeSize)
     if (ancestors && ancestors.length > 0) {
         ancestors.forEach((ancestor, index) => {
             nodes.push({
@@ -80,7 +91,10 @@ export const getNodesAnEdgesOfActivities = (activities: Activity[], ancestors: A
                     select: select,
                     hasSource: true,
                     hasTarget: index !== ancestors.length - 1,
-                    isAncestor: true
+                    isAncestor: true,
+                    width: 250,
+                    height: 80,
+                    onChangeSize: (width, number) => onChangeSize(edges, ancestor.identifier, width, number)
                 },
                 position: {
                     x: 0,
@@ -89,13 +103,13 @@ export const getNodesAnEdgesOfActivities = (activities: Activity[], ancestors: A
                 type: "Activity",
                 sourcePosition: Position.Right,
                 targetPosition: Position.Left,
-                selectable: false
+                selectable: false,
             })
-            nodesLeveled.push({ name: ancestor.identifier, parent: index > 0 ? ancestors[index - 1].identifier : "" })
         })
 
     }
-    autoLayout(nodesLeveled, nodes);
+    console.log(ancestors)
+    autoLayoutNodes(edges, nodes, !!ancestors);
     return {
         nodes,
         edges
@@ -103,10 +117,11 @@ export const getNodesAnEdgesOfActivities = (activities: Activity[], ancestors: A
 }
 
 export const toNodes = (
-     edges: Edge[],
+    edges: Edge[],
     activities: Activity[],
     ancestor: Activity | undefined,
     select: SubActivitySelection,
+    onChangeSize: (edges: Edge<any>[], nodeId: string, width: number, height: number) => void,
     level: number = 0,
 ): Node<ActivityData>[] => {
     const nodes: Node<ActivityData>[] = []
@@ -118,6 +133,9 @@ export const toNodes = (
                 select: select,
                 hasSource: edges.some((edge) => edge.source === obj.identifier),
                 hasTarget: edges.some((edge) => edge.target === obj.identifier),
+                width: 250,
+                height: 80,
+                onChangeSize: (width, number) => onChangeSize(edges, obj.identifier, width, number)
             },
             position: {
                 x: 0,

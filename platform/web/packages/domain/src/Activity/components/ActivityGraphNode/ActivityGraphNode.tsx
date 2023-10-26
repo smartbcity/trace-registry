@@ -1,31 +1,41 @@
 import { Card, CardContent, CardHeader, Typography, Collapse, CardActions, LinearProgress, Stack } from '@mui/material'
 import { ExpandMoreRounded } from '@mui/icons-material'
 import { Handle, NodeProps } from "reactflow"
-import React, {useCallback, useMemo, useEffect} from 'react'
+import React, { useCallback, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import {ActivityData} from "../../graph";
+import { ActivityData } from "../../graph";
+import { useElementSize } from "@mantine/hooks";
 
-export const ActivityGraphNode =  (props: NodeProps<ActivityData>) => {
+export const ActivityGraphNode = (props: NodeProps<ActivityData>) => {
     const { data, isConnectable, targetPosition, sourcePosition, selected } = props
     const [expanded, setExpanded] = React.useState(data.isAncestor ?? false);
     const { t } = useTranslation()
     const requirement = data.current
+    const { ref, height } = useElementSize();
+
+
+    useEffect(() => {
+        if (data.isAncestor) return
+        if (expanded) data.onChangeSize(250, 80 + height)
+        else if (data.height !== 80) data.onChangeSize(250, 80)
+    }, [expanded, data.isAncestor])
+
 
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
 
     useEffect(() => {
-      if (data.isAncestor) setExpanded(true)
-      else setExpanded(false)
+        if (data.isAncestor) setExpanded(true)
+        else setExpanded(false)
     }, [data.isAncestor])
-    
+
 
     const groupedChildren = useMemo(() => requirement.hasRequirement?.map(el => {
         return (
             <Typography
                 key={el.identifier}
-                  variant="body2"
+                variant="body2"
                 sx={{
                     color: "#697077",
                     textDecoration: "underline",
@@ -48,7 +58,7 @@ export const ActivityGraphNode =  (props: NodeProps<ActivityData>) => {
         },
         [requirement, data.isAncestor, data.select],
     )
-    const hasRequirement = useMemo( () => requirement.hasRequirement.length > 0, [requirement.hasRequirement.length])
+    const hasRequirement = useMemo(() => requirement.hasRequirement.length > 0, [requirement.hasRequirement.length])
 
     return (
         <Card
@@ -74,7 +84,7 @@ export const ActivityGraphNode =  (props: NodeProps<ActivityData>) => {
                     },
                     padding: "10px 12px"
                 }}
-                onClick={hasRequirement ? handleExpandClick : undefined}
+                onClick={hasRequirement && !data.isAncestor  ? handleExpandClick : undefined}
                 title={`${requirement.identifier} - ${requirement.name}`}
                 titleTypographyProps={{
                     variant: "subtitle2"
@@ -93,6 +103,7 @@ export const ActivityGraphNode =  (props: NodeProps<ActivityData>) => {
             />
             {requirement.hasRequirement && <Collapse in={expanded} timeout="auto">
                 <CardContent
+                    ref={ref}
                     sx={{
                         padding: "10px 12px !important"
                     }}

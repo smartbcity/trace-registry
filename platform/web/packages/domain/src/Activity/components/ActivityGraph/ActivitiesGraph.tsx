@@ -1,5 +1,5 @@
 import { Box } from '@mui/material'
-import { ReactFlow, Background, useEdgesState, useNodesState, Controls, useReactFlow } from "reactflow"
+import { ReactFlow, Background, useEdgesState, useNodesState, Controls, useReactFlow, Edge } from "reactflow"
 import 'reactflow/dist/style.css';
 import {
   useCallback,
@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { Activity, ActivityId } from "../../model";
 import { ActivityGraphNode } from "../ActivityGraphNode";
-import { getActivitiesOfDinasty, getNodesAnEdgesOfActivities } from "../../graph";
+import { autoLayoutNodes, getActivitiesOfDinasty, getNodesAnEdgesOfActivities } from "../../graph";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useRoutesDefinition } from 'components';
 
@@ -63,7 +63,25 @@ export const ActivitiesGraph = (props: ActivitiesGraphProps) => {
       navigateActivities(current.fixedDynasty)
       return 
     }
-    const { nodes, edges } = getNodesAnEdgesOfActivities(current.activities, current.ancestors, selectRequirement)
+
+    const onChangeSize = (edges: Edge<any>[], nodeId: string, width: number, height: number) => {
+      setNodes((nodes) => {
+        const copy = [...nodes]
+        const index = copy.findIndex((node) => node.id === nodeId)
+        copy[index] = {
+          ...copy[index],
+          data: {
+            ...copy[index].data,
+            width: width,
+            height: height
+          }
+        }
+        autoLayoutNodes(edges, copy, !!current.ancestors)
+        return copy
+      })
+    }
+
+    const { nodes, edges } = getNodesAnEdgesOfActivities(current.activities, current.ancestors, selectRequirement, onChangeSize)
     setNodes(nodes)
     setEdges(edges)
     setTimeout(() => {
@@ -77,7 +95,10 @@ export const ActivitiesGraph = (props: ActivitiesGraphProps) => {
       sx={{
         flexGrow: 1,
         flexBasis: 0,
-        height: "100%"
+        height: "100%",
+        "& .react-flow__node-Activity": {
+          transition: "0.3s"
+        }
       }}
     >
       <ReactFlow
