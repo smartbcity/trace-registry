@@ -8,9 +8,10 @@ import {
 } from 'react';
 import { Activity, ActivityId } from "../../model";
 import { ActivityGraphNode } from "../ActivityGraphNode";
-import { autoLayoutNodes, getActivitiesOfDinasty, getNodesAnEdgesOfActivities } from "../../graph";
+import { getActivitiesOfDinasty, getNodesAnEdgesOfActivities } from "../../graph";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useRoutesDefinition } from 'components';
+import { autoLayoutNodes } from 'template';
 
 export interface ActivitiesGraphProps {
   activities: Activity[],
