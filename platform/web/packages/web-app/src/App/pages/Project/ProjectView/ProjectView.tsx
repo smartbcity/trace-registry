@@ -6,6 +6,7 @@ import {
     DocumentsPage,
     ProjectActivities,
     ProjectInformationSection,
+    ProtocolBuilder,
     useProjectGetQuery
 } from 'domain-components'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -66,6 +67,12 @@ export const ProjectView = (_: ProjectViewProps) => {
             label: t('documents'),
             component: (<DocumentsPage isLoading={fileListQuery.isLoading} files={fileListQuery.data?.items} />)
         })
+
+        tabs.push({
+            key: 'protocol',
+            label: "Protocol",
+            component: (<ProtocolBuilder />)
+        })
         return tabs
     }, [project, projectQuery.isLoading, fileListQuery.data?.items, t])
 
@@ -82,7 +89,7 @@ export const ProjectView = (_: ProjectViewProps) => {
                 onTabChange={onTabChange}
                 sx={{
                     "& .AruiSection-contentContainer": {
-                        padding: currentTab === "activities" || currentTab === "assets" || currentTab === "documents" ? "unset" : undefined
+                        padding: currentTab !== "info" ? "unset" : undefined
                     }
                 }}
             />

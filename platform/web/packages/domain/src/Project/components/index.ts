@@ -4,4 +4,5 @@ export * from "./ProjectDetails"
 export * from "./ProjectInformationSection"
 export * from "./ProjectProtocolesLocation"
 export * from "./ProjectActivities"
+export * from "./FormBuilder"
 

@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
     "composite": true,
-    "module": "ESNext",
+    "module": "es5",
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
     "baseUrl": "src",
+    "experimentalDecorators": true
   },
   "include": ["vite.config.ts"]
 }

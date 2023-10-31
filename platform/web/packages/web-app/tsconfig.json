@@ -19,6 +19,7 @@
     "jsx": "react-jsx",
     "isolatedModules": true,
     "baseUrl": "src",
+    "experimentalDecorators": true
   },
   "include": ["src", "../domain/src/Catalog/components/useCatalogsRouteParams/index.ts"],
   "references": [{ "path": "./tsconfig.vite.json" }]
