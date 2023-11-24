@@ -85,6 +85,10 @@
   "program": "Program",
   "methodologie": "Methodologie",
   "switchTo": "Switch to",
+  "updatedAt": "Updated at",
+  "identifier": "Identifier",
+  "contactType": "Contact type",
+  "accountant": "Accountant",
   "roles": {
     "super_admin": "Global admin",
     "admin": "Admin",
@@ -213,5 +217,11 @@
     "seeAllPrograms": "See all programs from this standard",
     "seeAllMethodologies": "See all methodologies from this program",
     "sectoralScopes": "Sectoral scopes"
+  },
+  "tasks": {
+    "welcomeToDashboard":"Welcome to your Dashboard !",
+    "dashboardDescription": "Here, you can review and complete all your pending tasks, whether it's validating registration documents or assessing project compliance. Simply select a task to begin your audit. Let's get started!",
+    "noData": "No task was found",
+    "type": "Task type"
   }
 }

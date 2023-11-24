@@ -5,10 +5,11 @@ import { App } from "App";
 import { registryPages } from "App/pages/router";
 import {useMemo} from "react"
 import { catalogPages } from "App/pages/Catalogue";
+import { tasksPages } from "App/pages/Tasks";
 
 
 
-const allPages: PageRoute[] = [...registryPages, ...catalogPages]
+const allPages: PageRoute[] = [...registryPages, ...catalogPages, ...tasksPages]
 
 export const AppRouter = () => {
   const pages = useMemo(() => allPages.map((page) => GenerateRoute(page)), [])

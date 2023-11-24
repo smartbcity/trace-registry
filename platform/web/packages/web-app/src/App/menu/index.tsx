@@ -2,7 +2,7 @@ import { Link, LinkProps } from "react-router-dom";
 import { useMemo } from "react";
 import { MenuItems } from '@smartb/g2-components'
 import { useLocation } from "react-router";
-import {AccountCircle, Login, Logout, TravelExplore} from "@mui/icons-material";
+import { AccountCircle, Login, Logout, TravelExplore, HomeRounded } from "@mui/icons-material";
 import { TFunction } from "i18next";
 import { StandardIcon, useExtendedAuth, useRoutesDefinition } from "components";
 
@@ -41,28 +41,35 @@ export const getMenu = (location: string, menu: MenuItem[]): MenuItems<LinkProps
 
 export const useMenu = (t: TFunction) => {
     const location = useLocation()
-    const {service} = useExtendedAuth()
-    const {projects, catalogues} = useRoutesDefinition()
+    const { service, keycloak } = useExtendedAuth()
+    const { projects, catalogues, dashboard } = useRoutesDefinition()
     const menu: MenuItem[] = useMemo(() => [
-     {
-        key: "Registry",
-        to: projects(),
-        label:  t("exploreProjects"),
-        icon: <TravelExplore />,
-        isSelected: location.pathname === "/" || location.pathname.includes(projects())
-    },{
-        key: "catalogues",
-        to: catalogues(),
-        label:  t("exploreStandards"),
-        icon: <StandardIcon />,
-        isSelected: location.pathname.includes(catalogues())
-    }], [t, service.hasUserRouteAuth, location.pathname])
+        ...(keycloak.isAuthenticated ? [{
+            key: "Dashboard",
+            to: dashboard(),
+            label: t("dashboard"),
+            icon: <HomeRounded />,
+            isSelected: location.pathname.includes(dashboard())
+        }] : []),
+        {
+            key: "Registry",
+            to: projects(),
+            label: t("exploreProjects"),
+            icon: <TravelExplore />,
+            isSelected: location.pathname === "/" || location.pathname.includes(projects())
+        }, {
+            key: "catalogues",
+            to: catalogues(),
+            label: t("exploreStandards"),
+            icon: <StandardIcon />,
+            isSelected: location.pathname.includes(catalogues())
+        }], [t, service.hasUserRouteAuth, location.pathname])
     return useMemo(() => getMenu(location.pathname, menu), [location.pathname, menu])
 }
 
 export const useUserMenu = (logout: () => void, login: () => void, t: TFunction) => {
     const location = useLocation()
-    const {service} = useExtendedAuth()
+    const { service } = useExtendedAuth()
     const loggedMenu: MenuItem[] = useMemo(() => [{
         key: "profil",
         to: "https://dev.connect.smart-b.io/myProfil",

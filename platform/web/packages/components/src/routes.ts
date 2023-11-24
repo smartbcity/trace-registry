@@ -10,6 +10,7 @@ const strictRoutesAuthorizations = {
     "transactions": "open",
     "catalogues": "open",
     "catalogues/*": "open",
+    "dashboard": "open",
 } as const
 
 export type Routes = keyof typeof strictRoutesAuthorizations
